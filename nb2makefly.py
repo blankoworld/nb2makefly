@@ -35,7 +35,7 @@ import re
 ## VARIABLES
 ###
 nanoblogger_conf = 'nb.conf'
-sourcefile = 'test_01_raw.txt'
+sourcefile = '2004-01-30T12_00_43.txt'
 chars = {
     'é': 'e',
     'è': 'e',
