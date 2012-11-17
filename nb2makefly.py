@@ -207,7 +207,7 @@ def main():
 
     # Write result
     try:
-        t = open('%s%s' % (targetfile, extension), 'w')
+        t = open('%s%s' % ('src/' + targetfile, extension), 'w')
     except IOError, e:
         print(e)
         return 1
