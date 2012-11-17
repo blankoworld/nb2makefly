@@ -1,10 +1,11 @@
 TITLE: A New Entry
 AUTHOR: foo
-DATE: January 30 2004, 12:00 PM
-TIMESTAMP: 2012-09-11 15:00
+DATE: 23/04/2005 15:35:34
+TIMESTAMP: 2012-04-23 17:50:00
 DESC: keywords or a short, one line summary
 FORMAT: raw
 -----
 BODY:
 <p>This is my new entry ...</p>
+<p>Another paragraph</p>
 END-----

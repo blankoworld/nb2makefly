@@ -30,12 +30,14 @@
 ###
 import sys
 import re
+import datetime
 
 #####
 ## VARIABLES
 ###
 nanoblogger_conf = 'nb.conf'
 sourcefile = '2004-01-30T12_00_43.txt'
+default_type = 'news'
 chars = {
     'é': 'e',
     'è': 'e',
@@ -128,6 +130,17 @@ def main():
     - creation date
     - etc.
     """
+    # Search DATE_FORMAT in nanoblogger conf
+    date_format = False
+    with open(nanoblogger_conf, 'r') as conf:
+        for line in conf:
+            regex_conf = re.match('^DATE_FORMAT=[\'"](.*)[\'"]$', line)
+            if regex_conf:
+                date_format = regex_conf.group(1)
+    if not date_format:
+        print "Error: no date format found!"
+        return 1
+
     # Open source file
     try:
         f = open(sourcefile, 'rb')
@@ -161,30 +174,31 @@ def main():
     # meta data
     for element in meta:
         if element.startswith("TITLE:"):
-            title = element[6:]
+            title = element[6:].strip()
             continue
         if element.startswith("DESC:"):
-            description = element[5:]
+            description = element[5:].strip()
             continue
         if element.startswith("DATE:"):
-            date = element[5:]
+            date = element[5:].strip()
             continue
         if element.startswith("TIMESTAMP:"):
-            timestamp = element[10:]
+            timestamp = element[10:].strip()
             continue
         if element.startswith("FORMAT:"):
-            post_format = element[7:]
+            post_format = element[7:].strip()
             continue
         if element.startswith("AUTHOR:"):
-            author = element[7:]
+            author = element[7:].strip()
             continue
         print("%s\n\tUnknown metadata: %s" % (sourcefile, element))
     # Mandatory metadata
     if not title:
         print("%s\n\tNo TITLE found!" % (sourcefile))
         return 1
-    # Print result
-    #print title, description, date, timestamp, post_format, author
+
+    # Search tags
+    tags = None
 
 ## NOTE FOR FORMAT:
 # autobr : change all \n in <br/>
@@ -205,7 +219,7 @@ def main():
         print "Error: No targetfile!"
         return 1
 
-    # Write result
+    # Write src file result (content)
     try:
         t = open('%s%s' % ('src/' + targetfile, extension), 'w')
     except IOError, e:
@@ -218,6 +232,44 @@ def main():
         return 1
     finally:
         t.close()
+
+    # Create timestamp
+    meta_timestamp = False
+    if timestamp:
+        meta_timestamp = datetime.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').strftime('%s')
+    elif date:
+        meta_timestamp = datetime.datetime.strptime(date, date_format).strftime('%s')
+    if not meta_timestamp:
+        print "Error: Date problem!"
+        return 1
+
+    # Write db file result (meta info)
+    try:
+        d = open('%s%s' % ('db/' + meta_timestamp + ',' + targetfile, extension), 'w')
+    except IOError, e:
+        print(e)
+        return 1
+    try:
+        # Write META INFO
+        # First TITLE
+        d.write('TITLE = %s\n' % title or '')
+        # Then DESCRIPTION
+        d.write('DESCRIPTION = %s\n' % description or '')
+        # DATE
+        d.write('DATE = %s\n' % date or '')
+        # TAGS
+        if tags:
+            d.write('TAGS = %s\n' % tags)
+        # TYPE
+        d.write('TYPE = %s\n' % default_type or '')
+
+    except ValueError, e:
+        print(e)
+        return 1
+    finally:
+        d.close()
+
+    # END
     return 0
 
 if __name__ == '__main__':
