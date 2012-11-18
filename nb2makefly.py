@@ -81,7 +81,7 @@ def accentued_char_replacement(string):
     }
     r = ''
     for i in string:
-        if xlate.has_key(ord(i)):
+        if ord(i) in xlate:
             r += xlate[ord(i)]
         elif ord(i) >= 0x80:
             pass
@@ -93,8 +93,8 @@ def replace_all(text, dic):
     """
     Replace chars from given dic
     """
-    for i, j in dic.iteritems():
-        text = text.replace(i, j)
+    for el in dic:
+        text = text.replace(el, dic[el])
     return text
 
 def format_string(string):
@@ -138,18 +138,18 @@ def main():
             if regex_conf:
                 date_format = regex_conf.group(1)
     if not date_format:
-        print "Error: no date format found!"
+        print("Error: no date format found!")
         return 1
 
     # Open source file
     try:
         f = open(sourcefile, 'rb')
-    except IOError, e:
+    except IOError as e:
         print(e)
         return 1
     try:
         text = f.read()
-    except ValueError, e:
+    except ValueError as e:
         print(e)
         return 1
     finally:
@@ -163,9 +163,12 @@ def main():
     date = ""
     timestamp = False
     # Parse source file content
+    if isinstance(text, bytes):
+        text = text.decode('utf-8')
     data = text.split("-----\n")
-    content = data[1] or ""
-    meta = data[0] and data[0].split("\n") or False
+    if len(data) > 1:
+        content = data[1]
+    meta = data[0] and str(data[0]).split("\n") or False
     # content data
     if content.startswith("BODY:"):
         content = content[5:]
@@ -216,18 +219,18 @@ def main():
     # Some changes
     targetfile = new_title or None
     if not targetfile:
-        print "Error: No targetfile!"
+        print("Error: No targetfile!")
         return 1
 
     # Write src file result (content)
     try:
         t = open('%s%s' % ('src/' + targetfile, extension), 'w')
-    except IOError, e:
+    except IOError as e:
         print(e)
         return 1
     try:
         t.write(content)
-    except ValueError, e:
+    except ValueError as e:
         print(e)
         return 1
     finally:
@@ -240,13 +243,13 @@ def main():
     elif date:
         meta_timestamp = datetime.datetime.strptime(date, date_format).strftime('%s')
     if not meta_timestamp:
-        print "Error: Date problem!"
+        print("Error: Date problem!")
         return 1
 
     # Write db file result (meta info)
     try:
         d = open('%s%s' % ('db/' + meta_timestamp + ',' + targetfile, extension), 'w')
-    except IOError, e:
+    except IOError as e:
         print(e)
         return 1
     try:
@@ -263,7 +266,7 @@ def main():
         # TYPE
         d.write('TYPE = %s\n' % default_type or '')
 
-    except ValueError, e:
+    except ValueError as e:
         print(e)
         return 1
     finally:
