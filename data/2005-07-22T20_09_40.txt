@@ -1,0 +1,16 @@
+DATE: 22/07/2005 20:09:40
+TITLE: Apprendre
+AUTHOR: Blankoworld
+DESC: Jeux de mots
+FORMAT: autobr
+-----
+BODY:
+
+<p>Apprendre, qu'est ce apprendre ? Savoir, oublier, comprendre, ... voici un petit paragraphe qui vous fera sûrement réfléchir :</p>
+<p>Plus nous apprenons et plus nous savons<br />
+Plus nous savons et plus nous oublions<br />
+Plus nous oublions et moins nous en savons<br />
+Donc plus nous apprenons et moins nous en savons.<br /></p>
+
+Merci à Alexandra de Première S à l'institution Notre - Dame des Mineurs de Strasbourg aux alentours de 2001 / 2002 pour ces petits mots intéressants.
+END-----

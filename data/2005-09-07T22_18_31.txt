@@ -1,0 +1,15 @@
+DATE: 07/09/2005 22:18:31
+TITLE: Proverbes Blankidés
+AUTHOR: Blankoworld
+DESC: Des phrases sans queue ni tête.
+FORMAT: autobr
+-----
+BODY:
+
+En attendant que je n'en trouve d'autres, voici une phrase qui est sortie de mon esprit tordue :<br />
+La thèse de Thèze sur le Thésaurus et Tesée s'est averée être forte aise à accomplir.<br />
+Thèse est un document écrit.<br />
+Thèze est le nom d'un Saint (Saint Thèze)<br />
+Thésaurus est un dinosaure imaginaire (peut être pas tant que ça ...)<br />
+Fort aise se dit "fortaise"
+END-----
