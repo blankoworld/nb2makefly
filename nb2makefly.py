@@ -28,6 +28,7 @@
 #####
 ## LIBRARIES
 ###
+import os
 import sys
 import re
 import datetime
@@ -39,7 +40,8 @@ import datetime
 # Nanoblogger
 nanoblogger_conf = 'nb.conf'
 datadir = 'data'
-sourcefile = '2004-01-30T12_00_43.txt'
+data_ext = '.txt'
+cat_ext = '.db'
 # Makefly
 extension = '.md'
 default_type = 'news'
@@ -54,6 +56,17 @@ chars = {
     ':': '_',
     '__': '_',
 }
+
+def listdir(directory, ext):
+    """
+    Return directory listing
+    """
+    res = []
+    dirList=os.listdir(directory)
+    for fname in dirList:
+        if fname.endswith(ext):
+            res.append(fname)
+    return res
 
 def accentued_char_replacement(string):
     """
@@ -112,6 +125,15 @@ def format_string(string):
         ' ': '_', 
         '?': '_',
         '!': '_',
+        ':': '_',
+        '{': '_',
+        '}': '_',
+        '/': '_',
+        '\\': '_',
+        ',': '_',
+        ';': '_',
+        '(': '_',
+        ')': '_',
         }
     res = string
     # delete special chars
@@ -145,70 +167,80 @@ def main():
             if regex_conf:
                 date_format = regex_conf.group(1)
     if not date_format:
-        print("Error: no date format found!")
+        print("Error: no date format found in Nanoblogger configuration!")
         return 1
 
-    # Open source file
-    try:
-        f = open(sourcefile, 'rb')
-    except IOError as e:
-        print(e)
-        return 1
-    try:
-        text = f.read()
-    except ValueError as e:
-        print(e)
-        return 1
-    finally:
-        f.close()
+    # List data directory
+    posts = listdir(datadir, data_ext)
+    if not posts:
+        print("Warning: no posts found in this directory: %s!" % datadir)
 
-    # Some var
-    content = ""
-    meta = False
-    title = ""
-    description = ""
-    date = ""
-    timestamp = False
-    # Parse source file content
-    if isinstance(text, bytes):
-        text = text.decode('utf-8')
-    data = text.split("-----\n")
-    if len(data) > 1:
-        content = data[1]
-    meta = data[0] and str(data[0]).split("\n") or False
-    # content data
-    if content.startswith("BODY:"):
-        content = content[5:]
-    if content.endswith("END"):
-        content = content[:-3]
-    # meta data
-    for element in meta:
-        if element.startswith("TITLE:"):
-            title = element[6:].strip()
+    for postfile in posts:
+        path = datadir + '/' + postfile
+        # Open source file
+        try:
+            f = open(path, 'rb')
+        except IOError as e:
+            print(e)
             continue
-        if element.startswith("DESC:"):
-            description = element[5:].strip()
+        try:
+            text = f.read()
+        except ValueError as e:
+            print(e)
             continue
-        if element.startswith("DATE:"):
-            date = element[5:].strip()
-            continue
-        if element.startswith("TIMESTAMP:"):
-            timestamp = element[10:].strip()
-            continue
-        if element.startswith("FORMAT:"):
-            post_format = element[7:].strip()
-            continue
-        if element.startswith("AUTHOR:"):
-            author = element[7:].strip()
-            continue
-        print("%s\n\tUnknown metadata: %s" % (sourcefile, element))
-    # Mandatory metadata
-    if not title:
-        print("%s\n\tNo TITLE found!" % (sourcefile))
-        return 1
+        finally:
+            f.close()
 
-    # Search tags
-    tags = None
+        # Some var
+        content = ""
+        meta = False
+        title = ""
+        description = ""
+        date = ""
+        timestamp = False
+        # Parse source file content
+        if isinstance(text, bytes):
+            text = text.decode('utf-8')
+        data = text.split("-----\n")
+        if len(data) > 1:
+            content = data[1]
+        try:
+            meta = data[0] and str(data[0].encode('utf-8')).split("\n") or False
+        except UnicodeEncodeError as e:
+            print('Encode/decode error on file "%s"' % postfile)
+        # content data
+        if content.startswith("BODY:"):
+            content = content[5:]
+        if content.endswith("END"):
+            content = content[:-3]
+        # meta data
+        for element in meta:
+            if element.startswith("TITLE:"):
+                title = element[6:].strip()
+                continue
+            if element.startswith("DESC:"):
+                description = element[5:].strip()
+                continue
+            if element.startswith("DATE:"):
+                date = element[5:].strip()
+                continue
+            if element.startswith("TIMESTAMP:"):
+                timestamp = element[10:].strip()
+                continue
+            if element.startswith("FORMAT:"):
+                post_format = element[7:].strip()
+                continue
+            if element.startswith("AUTHOR:"):
+                author = element[7:].strip()
+                continue
+            print("%s\n\tUnknown metadata: %s" % (path, element))
+        # Mandatory metadata
+        if not title:
+            print("%s\n\tNo TITLE found!" % (path))
+            continue
+
+        # Search tags
+        tags = None
 
 ## NOTE FOR FORMAT:
 # autobr : change all \n in <br/>
@@ -221,63 +253,63 @@ def main():
 # - If an error: display a message and go to next post
 # - How to fetch categories and links with post in nanoblogger?
 
-    # Metachars replacement
-    new_title = format_string(title)
-    # Some changes
-    targetfile = new_title or None
-    if not targetfile:
-        print("Error: No targetfile!")
-        return 1
+        # Metachars replacement
+        new_title = format_string(title)
+        # Some changes
+        targetfile = new_title or None
+        if not targetfile:
+            print("Error: No targetfile!")
+            continue
 
-    # Write src file result (content)
-    try:
-        t = open('%s%s' % (targetdir + '/' + targetfile, extension), 'w')
-    except IOError as e:
-        print(e)
-        return 1
-    try:
-        t.write(content)
-    except ValueError as e:
-        print(e)
-        return 1
-    finally:
-        t.close()
+        # Write src file result (content)
+        try:
+            t = open('%s%s' % (targetdir + '/' + targetfile, extension), 'w')
+        except IOError as e:
+            print(e)
+            continue
+        try:
+            t.write(content)
+        except ValueError as e:
+            print(e)
+            continue
+        finally:
+            t.close()
 
-    # Create timestamp
-    meta_timestamp = False
-    if timestamp:
-        meta_timestamp = datetime.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').strftime('%s')
-    elif date:
-        meta_timestamp = datetime.datetime.strptime(date, date_format).strftime('%s')
-    if not meta_timestamp:
-        print("Error: Date problem!")
-        return 1
+        # Create timestamp
+        meta_timestamp = False
+        if timestamp:
+            meta_timestamp = datetime.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').strftime('%s')
+        elif date:
+            meta_timestamp = datetime.datetime.strptime(date, date_format).strftime('%s')
+        if not meta_timestamp:
+            print("Error: Date problem!")
+            continue
 
-    # Write db file result (meta info)
-    try:
-        d = open('%s%s' % (dbtargetdir + '/' + meta_timestamp + ',' + targetfile, extension), 'w')
-    except IOError as e:
-        print(e)
-        return 1
-    try:
-        # Write META INFO
-        # First TITLE
-        d.write('TITLE = %s\n' % title or '')
-        # Then DESCRIPTION
-        d.write('DESCRIPTION = %s\n' % description or '')
-        # DATE
-        d.write('DATE = %s\n' % date or '')
-        # TAGS
-        if tags:
-            d.write('TAGS = %s\n' % tags)
-        # TYPE
-        d.write('TYPE = %s\n' % default_type or '')
+        # Write db file result (meta info)
+        try:
+            d = open('%s%s' % (dbtargetdir + '/' + meta_timestamp + ',' + targetfile, extension), 'w')
+        except IOError as e:
+            print(e)
+            continue
+        try:
+            # Write META INFO
+            # First TITLE
+            d.write('TITLE = %s\n' % title or '')
+            # Then DESCRIPTION
+            d.write('DESCRIPTION = %s\n' % description or '')
+            # DATE
+            d.write('DATE = %s\n' % date or '')
+            # TAGS
+            if tags:
+                d.write('TAGS = %s\n' % tags)
+            # TYPE
+            d.write('TYPE = %s\n' % default_type or '')
 
-    except ValueError as e:
-        print(e)
-        return 1
-    finally:
-        d.close()
+        except ValueError as e:
+            print(e)
+            continue
+        finally:
+            d.close()
 
     # END
     return 0
