@@ -12,7 +12,7 @@ else
   echo "No files found!"
 fi
 
-if ! [ -z $dbfiles ]; then
+if ! [ -z "$dbfiles" ]; then
   rm $RM_OPT db/*
   echo "Files from 'db' directory deleted successfully"
 else
