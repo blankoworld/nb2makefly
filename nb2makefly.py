@@ -35,9 +35,17 @@ import datetime
 #####
 ## VARIABLES
 ###
+
+# Nanoblogger
 nanoblogger_conf = 'nb.conf'
+datadir = 'data'
 sourcefile = '2004-01-30T12_00_43.txt'
+# Makefly
+extension = '.md'
 default_type = 'news'
+targetdir = 'src'
+dbtargetdir = 'db'
+# Others
 chars = {
     'é': 'e',
     'è': 'e',
@@ -46,7 +54,6 @@ chars = {
     ':': '_',
     '__': '_',
 }
-extension = '.md'
 
 def accentued_char_replacement(string):
     """
@@ -224,7 +231,7 @@ def main():
 
     # Write src file result (content)
     try:
-        t = open('%s%s' % ('src/' + targetfile, extension), 'w')
+        t = open('%s%s' % (targetdir + '/' + targetfile, extension), 'w')
     except IOError as e:
         print(e)
         return 1
@@ -248,7 +255,7 @@ def main():
 
     # Write db file result (meta info)
     try:
-        d = open('%s%s' % ('db/' + meta_timestamp + ',' + targetfile, extension), 'w')
+        d = open('%s%s' % (dbtargetdir + '/' + meta_timestamp + ',' + targetfile, extension), 'w')
     except IOError as e:
         print(e)
         return 1
