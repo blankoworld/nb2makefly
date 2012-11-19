@@ -5,7 +5,7 @@
 files=`ls src/`
 dbfiles=`ls db/`
 RM_OPT='-f'
-if ! [ -z $files ]; then
+if ! [ -z "$files" ]; then
   rm $RM_OPT src/*
   echo "Files from 'src' directory deleted successfully"
 else
