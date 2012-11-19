@@ -36,7 +36,7 @@ import datetime
 #####
 ## VARIABLES
 ###
-
+limit = 5
 # Nanoblogger
 nanoblogger_conf = 'nb.conf'
 datadir = 'data'
@@ -44,6 +44,7 @@ data_ext = '.txt'
 cat_ext = '.db'
 # Makefly
 extension = '.md'
+db_ext = '.mk'
 default_type = 'news'
 targetdir = 'src'
 dbtargetdir = 'db'
@@ -134,6 +135,9 @@ def format_string(string):
         ';': '_',
         '(': '_',
         ')': '_',
+        '\'': '_',
+        '<': '_',
+        '>': '_',
         }
     res = string
     # delete special chars
@@ -141,7 +145,9 @@ def format_string(string):
     # replace some chars by a '_'
     string_replaced = replace_all(string_wo_acc, dic)
     # delete double '__'
-    string_double_deleted = string_replaced.replace('__', '_')
+    while '__' in string_replaced:
+        string_replaced = string_replaced.replace('__', '_')
+    string_double_deleted = string_replaced
     # search if '_' is at begin or at end
     regex = re.match('^_?(.*)_?$', string_double_deleted)
     if regex:
@@ -175,7 +181,10 @@ def main():
     if not posts:
         print("Warning: no posts found in this directory: %s!" % datadir)
 
-    for postfile in posts:
+    for num, postfile in enumerate(posts):
+        if num >= limit:
+            print "STOP."
+            return 1
         path = datadir + '/' + postfile
         # Open source file
         try:
@@ -191,6 +200,8 @@ def main():
         finally:
             f.close()
 
+        # INFO
+        print('INFO: %s' % postfile)
         # Some var
         content = ""
         meta = False
@@ -207,7 +218,7 @@ def main():
         try:
             meta = data[0] and str(data[0].encode('utf-8')).split("\n") or False
         except UnicodeEncodeError as e:
-            print('Encode/decode error on file "%s"' % postfile)
+            print('Encode/decode error: "%s"' % e)
         # content data
         if content.startswith("BODY:"):
             content = content[5:]
@@ -216,10 +227,10 @@ def main():
         # meta data
         for element in meta:
             if element.startswith("TITLE:"):
-                title = element[6:].strip()
+                title = element[6:].strip().decode('utf-8')
                 continue
             if element.startswith("DESC:"):
-                description = element[5:].strip()
+                description = element[5:].strip().decode('utf-8')
                 continue
             if element.startswith("DATE:"):
                 date = element[5:].strip()
@@ -233,10 +244,10 @@ def main():
             if element.startswith("AUTHOR:"):
                 author = element[7:].strip()
                 continue
-            print("%s\n\tUnknown metadata: %s" % (path, element))
+            print("\tUnknown metadata: %s" % (element))
         # Mandatory metadata
         if not title:
-            print("%s\n\tNo TITLE found!" % (path))
+            print("\n\tNo TITLE found!")
             continue
 
         # Search tags
@@ -258,55 +269,63 @@ def main():
         # Some changes
         targetfile = new_title or None
         if not targetfile:
-            print("Error: No targetfile!")
+            print("\tError: No targetfile!")
             continue
 
         # Write src file result (content)
         try:
             t = open('%s%s' % (targetdir + '/' + targetfile, extension), 'w')
         except IOError as e:
-            print(e)
+            print("\t%s" % e)
             continue
         try:
-            t.write(content)
+            t.write(content.encode('utf-8'))
+            print("\tsource file: OK")
         except ValueError as e:
-            print(e)
+            print("\t%s" % e)
             continue
         finally:
             t.close()
 
         # Create timestamp
         meta_timestamp = False
-        if timestamp:
-            meta_timestamp = datetime.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').strftime('%s')
-        elif date:
-            meta_timestamp = datetime.datetime.strptime(date, date_format).strftime('%s')
+        date_to_change = timestamp or False
+        if not date_to_change:
+            date_to_change = date
+        try:
+            meta_timestamp = datetime.datetime.strptime(date_to_change, '%Y-%m-%d %H:%M:%S').strftime('%s')
+        except ValueError as e:
+            try:
+                meta_timestamp = datetime.datetime.strptime(date_to_change, date_format).strftime('%s')
+            except Exception as e:
+                print("\tDate error: %s" % e)
+                continue
         if not meta_timestamp:
-            print("Error: Date problem!")
+            print("\tError: Date problem!")
             continue
 
         # Write db file result (meta info)
         try:
-            d = open('%s%s' % (dbtargetdir + '/' + meta_timestamp + ',' + targetfile, extension), 'w')
+            d = open('%s%s' % (dbtargetdir + '/' + meta_timestamp + ',' + targetfile, db_ext), 'w')
         except IOError as e:
-            print(e)
+            print("\t%s" % e)
             continue
         try:
             # Write META INFO
             # First TITLE
-            d.write('TITLE = %s\n' % title or '')
+            d.write('TITLE = %s\n' % title.encode('utf-8') or '')
             # Then DESCRIPTION
-            d.write('DESCRIPTION = %s\n' % description or '')
+            d.write('DESCRIPTION = %s\n' % description.encode('utf-8') or '')
             # DATE
-            d.write('DATE = %s\n' % date or '')
+            d.write('DATE = %s\n' % date.encode('utf-8') or '')
             # TAGS
             if tags:
-                d.write('TAGS = %s\n' % tags)
+                d.write('TAGS = %s\n' % tags.encode('utf-8'))
             # TYPE
             d.write('TYPE = %s\n' % default_type or '')
-
+            print("\tdb file: OK")
         except ValueError as e:
-            print(e)
+            print("\t%s" % e)
             continue
         finally:
             d.close()
