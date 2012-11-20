@@ -46,6 +46,7 @@ cat_ext = '.db'
 extension = '.md'
 db_ext = '.mk'
 default_type = 'news'
+default_tag = 'old_nanoblogger'
 targetdir = 'src'
 dbtargetdir = 'db'
 # Others
@@ -321,6 +322,8 @@ def main():
             # TAGS
             if tags:
                 d.write('TAGS = %s\n' % tags.encode('utf-8'))
+            else:
+                d.write('TAGS = %s\n' % default_tag.encode('utf-8'))
             # TYPE
             d.write('TYPE = %s\n' % default_type or '')
             print("\tdb file: OK")
