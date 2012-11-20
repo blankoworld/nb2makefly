@@ -36,7 +36,7 @@ import datetime
 #####
 ## VARIABLES
 ###
-limit = 5
+limit = 0
 # Nanoblogger
 nanoblogger_conf = 'nb.conf'
 datadir = 'data'
@@ -49,15 +49,6 @@ default_type = 'news'
 default_tag = 'old_nanoblogger'
 targetdir = 'src'
 dbtargetdir = 'db'
-# Others
-chars = {
-    'é': 'e',
-    'è': 'e',
-    ' ': '_',
-    ',': '_',
-    ':': '_',
-    '__': '_',
-}
 
 def listdir(directory, ext):
     """
@@ -124,21 +115,22 @@ def format_string(string):
     Format string as wanted for makefly
     """
     dic = {
-        ' ': '_', 
-        '?': '_',
-        '!': '_',
-        ':': '_',
-        '{': '_',
-        '}': '_',
-        '/': '_',
+        ' ' : '_', 
+        '?' : '_',
+        '!' : '_',
+        ':' : '_',
+        '{' : '_',
+        '}' : '_',
+        '/' : '_',
         '\\': '_',
-        ',': '_',
-        ';': '_',
-        '(': '_',
-        ')': '_',
+        ',' : '_',
+        ';' : '_',
+        '(' : '_',
+        ')' : '_',
         '\'': '_',
-        '<': '_',
-        '>': '_',
+        '<' : '_',
+        '>' : '_',
+        '|' : '_',
         }
     res = string
     # delete special chars
@@ -183,7 +175,7 @@ def main():
         print("Warning: no posts found in this directory: %s!" % datadir)
 
     for num, postfile in enumerate(posts):
-        if num >= limit:
+        if limit and num >= limit:
             print "STOP."
             return 1
         path = datadir + '/' + postfile
