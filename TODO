@@ -1,3 +1,4 @@
 TODO:
 - Search categ to put them into tags field
 - Change content regarding finded type (raw, autobr or markdown)
+- Search image files to be integrated as static files in Makefly
