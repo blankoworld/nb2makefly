@@ -266,8 +266,14 @@ def main():
             continue
 
         # Write src file result (content)
+        targetfile_path = '%s%s' % (targetdir + '/' + targetfile, extension)
+        if os.path.isfile(targetfile_path):
+            print("\tFile already exists: %s." % targetfile_path)
+            targetfile += '_copy'
+            targetfile_path = '%s%s' % (targetdir + '/' + targetfile, extension)
+            print("\tRename it to: %s." % targetfile_path)
         try:
-            t = open('%s%s' % (targetdir + '/' + targetfile, extension), 'w')
+            t = open(targetfile_path, 'w')
         except IOError as e:
             print("\t%s" % e)
             continue
