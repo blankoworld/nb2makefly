@@ -263,6 +263,12 @@ def main():
         elif post_format not in ['markdown', 'raw']:
             print("Unsupported format: %s!" % (post_format))
 
+        # Post's begin empty deletion
+        if content.startswith("<br />\n<br />\n"):
+            content = content[14:]
+        elif content.startswith('\n\n'):
+            content = content[3:]
+
 ## NOTES
 # - remember that there is some IMG file. So we should copy them. => how to discover this?
 #+ Perhaps it should be better to note "warning" there is a file to copy into static directory
