@@ -142,11 +142,14 @@ def format_string(string):
         string_replaced = string_replaced.replace('__', '_')
     string_double_deleted = string_replaced
     # search if '_' is at begin or at end
-    regex = re.match('^_?(.*)_?$', string_double_deleted)
-    if regex:
-        res = regex.group(1)
+    regex_begin = re.match('^_?(.*)_?$', string_double_deleted)
+    if regex_begin:
+        res = regex_begin.group(1)
     else:
         res = string_double_deleted
+    regex_end = re.match('^(.*)_+$', res)
+    if regex_end:
+        res = regex_end.group(1)
     # return res in lowercase
     return res.lower()
 
