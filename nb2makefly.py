@@ -243,7 +243,10 @@ def main():
             print("\tUnknown metadata: %s" % (element))
         # Mandatory metadata
         if not title:
-            print("\n\tNo TITLE found!")
+            print("\tNo TITLE found!")
+            continue
+        if not timestamp and not date:
+            print("\tNo DATE found!")
             continue
 
         # Search tags
