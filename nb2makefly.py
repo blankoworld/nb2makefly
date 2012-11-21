@@ -257,7 +257,6 @@ def main():
 ## NOTES
 # - remember that there is some IMG file. So we should copy them. => how to discover this?
 #+ Perhaps it should be better to note "warning" there is a file to copy into static directory
-# - If an error: display a message and go to next post
 # - How to fetch categories and links with post in nanoblogger?
 
         # Metachars replacement
