@@ -252,10 +252,16 @@ def main():
         # Search tags
         tags = None
 
-## NOTE FOR FORMAT:
-# autobr : change all \n in <br/>
-# raw : HTML file. So markdown use it as is.
-# markdown : use it as is because Makefly use markdown ;)
+        # Do changes regarding FORMAT
+        #+ IF autobr: changes all \n by a <br/>\n
+        #+ ELIF markdown OR raw: do nothing
+        #+ ELSE: format not supported!
+        if not post_format:
+            print("\tNo format!")
+        if post_format == 'autobr':
+            content = content.replace('\n', '<br />\n')
+        elif post_format not in ['markdown', 'raw']:
+            print("Unsupported format: %s!" % (post_format))
 
 ## NOTES
 # - remember that there is some IMG file. So we should copy them. => how to discover this?
