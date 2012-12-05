@@ -4,3 +4,4 @@ TODO:
 - Search all image and URL in EACH post, and create a synthesis of each post and URL that are used in (markdown + HTML) to inform user to change some posts to adapt them to Makefly
   * use a file in which the script wrote the result
   * attempt to remember all parsed post to refind those from which the link comes from?
+- Permit to transform some HTML links to another one. For an example /joueb/ to ${BASE_URL}/joueb/, etc.
