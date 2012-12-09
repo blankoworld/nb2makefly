@@ -153,6 +153,80 @@ def format_string(string):
     # return res in lowercase
     return res.lower()
 
+def list_categs(directory, ext):
+    """
+    Read all files with 'ext' extension in 'directory' and return them in a dict.
+    """
+    categs_data = {
+        'categories': {},
+        'files': {},
+    }
+    categs = listdir(directory, ext)
+
+    if not categs:
+        return res
+
+    for i, categ in enumerate(categs):
+        # Create path to reach categorie's file
+        path = datadir + '/' + categ
+        text = False
+        # Open it, read content and close it
+        try:
+            f = open(path, 'rb')
+        except IOError as e:
+            print(e)
+            continue
+        try:
+            text = f.read()
+        except ValueError as e:
+            print(e)
+            continue
+        finally:
+            f.close()
+     
+        # Go to next file if no content
+        if not text:
+            print("No text found in %s file" % path)
+            continue
+        # Else parse content
+        if isinstance(text, bytes):
+            text = text.decode('utf-8')
+        lines = text.split("\n")
+        if not lines[0]:
+            print("No name found for category in %s file" % path)
+            continue
+        if categ != 'master.db':
+            # search categ ID
+            categ_id = False
+            categ_filename = categ.split('.') and categ.split('.')[0] and categ.split('.')[0].split('_')
+            if categ_filename and len(categ_filename) > 1:
+                categ_id = categ_filename[1]
+            if not categ_id:
+                print("No category ID found for this file: %s" % path)
+                continue
+            # Search name
+            name = lines[0]
+            # write categ info in result
+            categs_data['categories'].update({categ_id: name})
+        for j, line in enumerate(lines):
+            if j == 0:
+                continue
+            if not line:
+                continue
+            info = line.split('>')
+            if len(info) > 1:
+                categ_ids = info[1].split(',')
+                if info[0] not in categs_data['files']:
+                    categs_data['files'].update({info[0]: categ_ids})
+                else:
+                    existing_ids = categs_data['files'][info[0]]
+                    for c_id in categ_ids:
+                        if c_id not in existing_ids:
+                            existing_ids.append(c_id)
+                    categs_data['files'][info[0]] = existing_ids
+    # return result
+    return categs_data
+
 def main():
     """
     Extract data from 'sourcefile' and create 'targetfile' with all data:
@@ -171,6 +245,17 @@ def main():
     if not date_format:
         print("Error: no date format found in Nanoblogger configuration!")
         return 1
+
+    # Fetch categories
+    categs = list_categs(datadir, cat_ext)
+    categs_name = False
+    if not categs:
+        print("Warning: no category found in this directory: %s!" % datadir)
+    else:
+        if 'categories' in categs:
+            categs_name = categs['categories']
+        if 'files' in categs:
+            categs_files = categs['files']
 
     # List data directory
     posts = listdir(datadir, data_ext)
@@ -251,6 +336,10 @@ def main():
 
         # Search tags
         tags = None
+        if categs and categs_name and categs_files and postfile in categs_files:
+            tags = []
+            for c_id in categs_files[postfile]:
+                tags.append(format_string(categs_name[c_id]))
 
         # Do changes regarding FORMAT
         #+ IF autobr: changes all \n by a <br/>\n
@@ -272,7 +361,6 @@ def main():
 ## NOTES
 # - remember that there is some IMG file. So we should copy them. => how to discover this?
 #+ Perhaps it should be better to note "warning" there is a file to copy into static directory
-# - How to fetch categories and links with post in nanoblogger?
 
         # Metachars replacement
         new_title = format_string(title)
@@ -336,7 +424,7 @@ def main():
             d.write('DATE = %s\n' % date.encode('utf-8') or '')
             # TAGS
             if tags:
-                d.write('TAGS = %s\n' % tags.encode('utf-8'))
+                d.write('TAGS = %s\n' % ','.join(tags).encode('utf-8'))
             else:
                 d.write('TAGS = %s\n' % default_tag.encode('utf-8'))
             # TYPE
