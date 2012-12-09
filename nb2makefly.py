@@ -179,7 +179,7 @@ def main():
 
     for num, postfile in enumerate(posts):
         if limit and num >= limit:
-            print "STOP."
+            print("STOP")
             return 1
         path = datadir + '/' + postfile
         # Open source file
