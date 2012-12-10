@@ -38,7 +38,7 @@ import datetime
 ###
 limit = 0
 # Nanoblogger
-nanoblogger_conf = 'nb.conf'
+nanoblogger_conf = 'blog.conf'
 datadir = 'data'
 data_ext = '.txt'
 cat_ext = '.db'
