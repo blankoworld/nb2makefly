@@ -42,13 +42,19 @@ nanoblogger_conf = 'blog.conf'
 datadir = 'data'
 data_ext = '.txt'
 cat_ext = '.db'
+nanoblogger_url = 'http://olivier.dossmann.net/joueb'
 # Makefly
 extension = '.md'
 db_ext = '.mk'
 default_type = 'news'
 default_tag = 'old_nanoblogger'
+default_url = '${BASE_URL}/'
 targetdir = 'src'
 dbtargetdir = 'db'
+# Others
+url_replacement_dict = {
+    '/joueb/': default_url,
+}
 
 def listdir(directory, ext):
     """
@@ -109,6 +115,16 @@ def replace_all(text, dic):
     for el in dic:
         text = text.replace(el, dic[el])
     return text
+
+#def replace_url(text):
+#    begin = text.group('begin')
+#    address = text.group('address')
+#    end = text.group('end')
+#    if address.startswith(nanoblogger_url):
+#        address = address.replace(nanoblogger_url, default_url)
+#    if begin and address and end:
+#        text = "%s%s%s" % (begin, address, end)
+#    return text
 
 def format_string(string):
     """
@@ -356,7 +372,18 @@ def main():
         if content.startswith("<br />\n<br />\n"):
             content = content[14:]
         elif content.startswith('\n\n'):
-            content = content[3:]
+            content = content[2:]
+
+        # Post's url replacement
+        
+        #md_pattern = """(?P<begin>.*\[.*\]\()(?P<address>.*)*(?P<end> ['"]+.*['"]+\).*)"""
+        #html_pattern = """(?P<begin>.*\<a href=['"]+)(?P<address>.*)*(?P<end>['"]+.*)"""
+        
+        # Simple replacement
+        content = content.replace(nanoblogger_url, default_url)
+        # Other replacements?
+        for el in url_replacement_dict:
+            content = content.replace(el, url_replacement_dict[el])
 
 ## NOTES
 # - remember that there is some IMG file. So we should copy them. => how to discover this?
