@@ -1,8 +1,13 @@
 TODO:
-- Search categ to put them into tags field
+
+- Search draft articles (or simple articles)
 - Search image files to be integrated as static files in Makefly
 - Search all image and URL in EACH post, and create a synthesis of each post and URL that are used in (markdown + HTML) to inform user to change some posts to adapt them to Makefly
   * use a file in which the script wrote the result
   * attempt to remember all parsed post to refind those from which the link comes from?
+- Create a script that search all index.html from nanoblogger to create permanent links as "http://myweblog.tld/archives/2008/03/12/index.html" to be added as Permanent link into Apache, nginx, etc. (for old posts to be reached easily)
+
+DONE:
+
+- Search categ to put them into tags field
 - Permit to transform some HTML links to another one. For an example /joueb/ to ${BASE_URL}/joueb/, etc.
-- Create a script that search all index.html from nanoblogger to create permanent links.
