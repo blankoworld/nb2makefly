@@ -456,6 +456,8 @@ def main():
                 d.write('TAGS = %s\n' % default_tag.encode('utf-8'))
             # TYPE
             d.write('TYPE = %s\n' % default_type or '')
+            # AUTHOR
+            d.write('AUTHOR = %s\n' % author or '')
             print("\tdb file: OK")
         except ValueError as e:
             print("\t%s" % e)
