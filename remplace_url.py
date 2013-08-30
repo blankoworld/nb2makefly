@@ -4,7 +4,7 @@
 import re
 
 url = 'http://olivier.dossmann.net/joueb/'
-new_url = "${BASE_URL}/"
+new_url = "${BLOG_URL}/"
 
 chaine = """Comme vous avez pu le constater, autant par le fait que les billets manquent que par le [dernier billet](http://olivier.dossmann.net/joueb/archives/2008/08/31/index.html#e2008-08-31T19_13_50.txt "Lire le dernier billet"), le BlankoJoueb rencontre des troubles d\'affichage."""
 autrechaine = """"""

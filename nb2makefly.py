@@ -48,7 +48,7 @@ extension = '.md'
 db_ext = '.mk'
 default_type = 'news'
 default_tag = 'old_nanoblogger'
-default_url = '${BASE_URL}/'
+default_url = '${BLOG_URL}/'
 targetdir = 'src'
 dbtargetdir = 'db'
 # Others
