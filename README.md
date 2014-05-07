@@ -1,10 +1,10 @@
-This documentation is in french. Please wait about a README.en.md version.
+This documentation is in french. Please refer to the README.en.md one to see it in English.
 
 ## Installation
 
 Pré-requis : python 2
 
-L'installation est simple : il suffit de copier le fichier nb2makefly.py dans le répertoire racine de Nanoblogger.
+L'installation est simple : il suffit de copier le fichier **nb2makefly.py** dans le répertoire racine de votre blog Nanoblogger.
 
 ## Utilisation
 
@@ -19,11 +19,11 @@ Ensuite lancez nb2makefly de la manière suivante :
 
 Cela va remplir les dossiers **src** et **db**.
 
-**ATTENTION** : la configuration par défaut devrait suffir, il faut cependant changer la variable suivante pour donner l'adresse de votre site web : **nanoblogger_url** (Cf. la section "Configuration de nb2makefly").)
+**ATTENTION** : la configuration par défaut devrait suffire, il faut cependant changer la variable suivante pour donner l'adresse de votre site web : **nanoblogger_url** (Cf. la section "Configuration de nb2makefly").
 
 ## Configuration de nb2makefly
 
-Dans le fichier **nb2makefly** sont contenus plusieurs variables de configuration, dont voici les noms et leur utilité : 
+Dans le fichier **nb2makefly.py** sont contenus plusieurs variables de configuration, dont voici les noms et leur utilité : 
 
   * limit : donne le nombre d'article maximum à importer/traiter
   * nanoblogger_conf : nom du fichier de configuration de Nanoblogger
@@ -46,7 +46,7 @@ Dans le fichier **nb2makefly** sont contenus plusieurs variables de configuratio
 
 ## Anciens liens de Nanoblogger et redirection
 
-Pour rediriger les anciens liens de Nanoblogger vers Makefly, sur votre serveur web utilisez la redirection permanente.
+Pour rediriger les anciens liens de Nanoblogger vers Makefly, sur votre serveur web (Apache2) utilisez la redirection permanente.
 
     Redirect permanent /ancienlien http://monsite.tld/nouveau_lien
 
